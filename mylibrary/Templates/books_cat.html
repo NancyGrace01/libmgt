@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ozone Library</title>
+</head>
+<body>
+
+<h2>Books in {{ category }}</h2>
+
+{% if books %}
+    <ul>
+        {% for book in books %}
+            <li>{{ book.title }} by {{ book.author }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No books found in this category.</p>
+{% endif %}
+
+
+    <a href="{% url 'book_list' %}">Back to All Books</a>
+
+</body>
+</html>
+

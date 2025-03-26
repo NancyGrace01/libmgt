@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ozone Library</title>
+</head>
+<body>
+    <h1>Ozone Library</h1>
+    {% if user.is_authenticated %}
+    <p>Welcome, {{ user.username }}!</p>
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+{% else %}
+    <a href="{% url 'login' %}">Login</a>
+{% endif %}
+
+<h2>Available Books</h2>
+{% if available_books %}
+    <ul>
+        {% for book in available_books %}
+            <li>
+                {{ book.title }} by {{book.author}} | Category: {{book.category}} - <a href="{% url 'borrow_book' book.id %}">Borrow</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No books available for borrowing.</p>
+{% endif %}
+
+<h2>Borrowed Books</h2>
+{% if user_borrowed_books %}
+    <ul>
+        {% for borrowed in user_borrowed_books %}
+            <li>{{ borrowed.book.title }} - Borrowed on {{ borrowed.borrow_date }} | Due: {{ borrowed.due_date }}
+                <a href="{% url 'return_book' borrowed.book.id %}">Return</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You have not borrowed any books yet.</p>
+{% endif %}
+
+
+
+
+    
+    <h2>Categories:</h2>
+    <ul>
+        <li><a href="{% url 'books_cat' category='fiction' %}">Fiction</a></li>
+        <li><a href="{% url 'books_cat' category='non-fiction' %}">Non-Fiction</a></li>
+        <li><a href="{% url 'books_cat' category='motivational' %}">Motivational</a></li>
+        <li><a href="{% url 'books_cat' category='thriller' %}">Thriller</a></li>
+    </ul>
+
+    
+</body>
+</html>

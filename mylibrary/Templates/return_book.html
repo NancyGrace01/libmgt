@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ozone Library</title>
+</head>
+<body>
+
+
+  <h2>Return Book</h2>
+  
+  {% if error %}
+    <p style="color: red;">{{ error }}</p>
+  {% else %}
+    <p>Are you sure you want to return <strong>{{ book.title }}</strong> by {{ book.author }}?</p>
+    
+    <form method="POST">
+      {% csrf_token %}
+      <button type="submit">Confirm Return</button>
+    </form>
+  {% endif %}
+  
+  <a href="{% url 'book_list' %}">Cancel</a>
+
