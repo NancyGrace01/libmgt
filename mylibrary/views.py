@@ -31,17 +31,6 @@ def signup(request):
     return render(request, 'signup.html', {'form': form})
 
 
-# def book_list(request):
-#     borrowed_book_ids = BorrowedBook.objects.values_list("book_id", flat=True).distinct()
-#     available_books = Book.objects.exclude(id__in=borrowed_book_ids)
-#     user_borrowed_books = BorrowedBook.objects.filter(borrower=request.user)
-
-#     context = {
-#         "available_books": available_books,
-#         "borrowed_books": user_borrowed_books
-#     }
-#     return render(request, "book_list.html", context)
-
 def book_list(request):
     user = request.user
     borrowed_books = BorrowedBook.objects.values_list("book_id", flat=True)
@@ -91,7 +80,7 @@ def borrow_book(request, book_id):
 def return_book(request, book_id):
     borrowed_book = BorrowedBook.objects.filter(book_id=book_id, borrower=request.user).first()
     if not borrowed_book:
-        return render(request, 'return_book.html', {'error': 'You have not borrowed this book or it has already been returned.'})
+        return render(request, 'return_book.html', {'error': 'You have not borrowed this book.'})
     if request.method == 'POST':
         borrowed_book.delete()
         return redirect('book_list')
