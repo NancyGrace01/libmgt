@@ -1,15 +1,26 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title> Ozone Library</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-<h2> Book Details </h2>
-{% for book_id, details in book_dict.items %}
-    <p><strong>ID:</strong> {{ book_id }} - <strong>Title:</strong> {{ details.title }} - <strong>Author:</strong> {{ details.author }}</p>
-{% endfor %}
+{% block title %}Book Details{% endblock %}
 
-
-</body>
-</html>
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="{{ book.image.url }}" class="img-fluid rounded-start" alt="{{ book.title }}">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h2 class="card-title text-primary">Book Details</h2>
+                    {% for book_id, details in book_dict.items %}
+                        <p><strong>ID:</strong> {{ book_id }}</p>
+                        <p><strong>Title:</strong> {{ details.title }}</p>
+                        <p><strong>Author:</strong> {{ details.author }}</p>
+                    {% endfor %}
+                    <a href="{% url 'book_list' %}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

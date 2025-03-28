@@ -1,10 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm
-from .models import Book, BorrowedBook
+from django.contrib.auth import login as auth_login, authenticate
+from django.contrib import messages
+from .models import Book, BorrowedBook, Profile
+from django.contrib.auth.models import User
 from datetime import timedelta, date
-from django.db.models import Q
+from django.http import JsonResponse
+from django.core.files.storage import default_storage
 
 
 
@@ -19,16 +21,37 @@ def add_book(request):
     pass
 
 
+
 def signup(request):
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('book_list')
-    else:
-        form = UserCreationForm()
-    return render(request, 'signup.html', {'form': form})
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        full_name = request.POST.get("full_name")
+        state = request.POST.get("state")
+        city = request.POST.get("city")
+        gender = request.POST.get("gender")
+        occupation = request.POST.get("occupation")
+
+        if User.objects.filter(username=username).exists():
+            return render(request, "signup.html", {"error": "Username already taken."})
+
+        user = User.objects.create_user(username=username, password=password)
+
+        Profile.objects.create(
+            user=user,
+            full_name=full_name,
+            state=state,
+            city=city,
+            gender=gender,
+            occupation=occupation
+        )
+
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            auth_login(request, user)
+            return redirect("book_list")
+
+    return render(request, "signup.html")
 
 
 def book_list(request):
@@ -87,3 +110,44 @@ def return_book(request, book_id):
 
     return render(request, 'return_book.html', {'book': borrowed_book.book})
 
+
+@login_required
+def profile(request):
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        if 'profile_picture' in request.FILES:
+            profile_picture = request.FILES['profile_picture']
+
+            if profile_picture.size > 50 * 1024:
+                messages.error(request, "File size should not exceed 50KB.")
+                return redirect("profile")
+
+            valid_extensions = ["image/jpeg", "image/png", "image/gif"]
+            if profile_picture.content_type not in valid_extensions:
+                messages.error(request, "Only JPG, PNG, and GIF images are allowed.")
+                return redirect("profile")
+
+            profile.profile_picture = profile_picture
+            profile.save()
+            messages.success(request, "Profile picture updated successfully.")
+            return redirect("profile") 
+
+    return render(request, "profile.html", {"profile": profile})
+
+
+
+
+def login(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return JsonResponse({"success": True, "message": "Login successful."})
+        else:
+            return JsonResponse({"success": False, "message": "Invalid username or password."})
+    
+    return render(request, "login.html")
