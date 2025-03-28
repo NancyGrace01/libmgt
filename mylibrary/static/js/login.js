@@ -1,6 +1,6 @@
 $(document).ready(function() {
     $('#login-form').submit(function(e) {
-        e.preventDefault();  // Prevent default form submission
+        e.preventDefault(); 
 
         $.ajax({
             type: 'POST',
