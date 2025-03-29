@@ -1,21 +1,25 @@
-$(document).ready(function() {
-    $('#login-form').submit(function(e) {
-        e.preventDefault(); 
+$(document).ready(function () {
+    $("#login-form").submit(function (e) {
+        e.preventDefault();
+
+        var formData = $(this).serialize();
+        var csrftoken = $("input[name=csrfmiddlewaretoken]").val();
 
         $.ajax({
-            type: 'POST',
-            url: '/login/',
-            data: $(this).serialize(),
-            dataType: "json",
-            success: function(response) {
-                $('#login-message').text(response.message);
-                if (response.success) {
-                    window.location.href = "/dashboard/"; 
-                }
+            type: "POST",
+            url: "/login/",
+            data: formData,
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
             },
-            error: function() {
-                $('#login-message').text("An error occurred. Please try again.");
-            }
+            success: function (response) {
+                $("#login-message").html("<p class='text-success'>" + response.message + "</p>");
+                window.location.href = "/dashboard/";
+            },
+            error: function (xhr) {
+                var errorMsg = JSON.parse(xhr.responseText).error;
+                $("#login-message").html("<p class='text-danger'>" + errorMsg + "</p>");
+            },
         });
     });
 });

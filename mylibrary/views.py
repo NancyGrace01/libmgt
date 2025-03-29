@@ -26,14 +26,20 @@ def signup(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password") 
         full_name = request.POST.get("full_name")
         state = request.POST.get("state")
         city = request.POST.get("city")
         gender = request.POST.get("gender")
         occupation = request.POST.get("occupation")
 
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match.")
+            return redirect("signup")
+
         if User.objects.filter(username=username).exists():
-            return render(request, "signup.html", {"error": "Username already taken."})
+            messages.error(request, "Username already taken.")
+            return redirect("signup")
 
         user = User.objects.create_user(username=username, password=password)
 
@@ -47,9 +53,10 @@ def signup(request):
         )
 
         user = authenticate(username=username, password=password)
-        if user is not None:
+        if user:
             auth_login(request, user)
-            return redirect("book_list")
+            messages.success(request, "Signup successful! Welcome to the platform.")
+            return redirect("login")
 
     return render(request, "signup.html")
 
@@ -145,9 +152,11 @@ def login(request):
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(request, user)
+            auth_login(request, user)
+            messages.success(request, "Login successful.")
             return JsonResponse({"success": True, "message": "Login successful."})
         else:
+            messages.error(request, "Invalid username or password.")
             return JsonResponse({"success": False, "message": "Invalid username or password."})
     
     return render(request, "login.html")
