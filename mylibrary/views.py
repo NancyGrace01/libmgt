@@ -1,24 +1,16 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login, authenticate
 from django.contrib import messages
-from .models import Book, BorrowedBook, Profile
+from .models import Book, BorrowedBook, Profile, Category
 from django.contrib.auth.models import User
 from datetime import timedelta, date
 from django.http import JsonResponse
-from django.core.files.storage import default_storage
 
 
 
 def home(request):
     return render(request, 'book_list.html')  
-
-def is_librarian(user):
-    return user.is_staff
-
-@user_passes_test(is_librarian)
-def add_book(request):
-    pass
 
 
 
@@ -66,21 +58,23 @@ def book_list(request):
     borrowed_books = BorrowedBook.objects.values_list("book_id", flat=True)
     available_books = Book.objects.exclude(id__in=borrowed_books)
     user_borrowed_books = BorrowedBook.objects.filter(borrower=user)
+    categories = Category.objects.all()
 
     context = {
         "available_books": available_books,
-        "user_borrowed_books": user_borrowed_books
+        "user_borrowed_books": user_borrowed_books,
+        "categories": categories,
     }
     return render(request, "book_list.html", context)
 
 
-
 @login_required
 def books_cat(request, category):
-    books = Book.objects.filter(category__iexact=category)
+    category_obj = get_object_or_404(Category, name__iexact=category)
+    books = Book.objects.filter(category=category_obj)
 
     context = {
-        "category": category,
+        "category": category_obj.name,
         "books": books
     }
 
@@ -132,7 +126,7 @@ def profile(request):
 
             valid_extensions = ["image/jpeg", "image/png", "image/gif"]
             if profile_picture.content_type not in valid_extensions:
-                messages.error(request, "Only JPG, PNG, and GIF images are allowed.")
+                messages.error(request, "Only JPG, PNG, and JPEG images are allowed.")
                 return redirect("profile")
 
             profile.profile_picture = profile_picture
