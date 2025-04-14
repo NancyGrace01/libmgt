@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Email{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4>Email Verification</h4>
+                    <p class="text-muted">Enter the 6-digit code sent to your email.</p>
+                </div>
+                <div class="card-body">
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Verification Code</label>
+                            <input type="text" name="verification_code" maxlength="6" class="form-control" placeholder="Enter code" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Verify</button>
+                    </form>
+                    
+
+                    <hr>
+
+                    <form method="post" action="{% url 'resend_verification_code' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-link w-100">Resend Code</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

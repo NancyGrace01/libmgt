@@ -1,0 +1,60 @@
+{% extends "admin_dashboard.html" %}
+{% block title %}Add New Book{% endblock %}
+
+{% block content %}
+<div class="main-panel">
+<div class="content-wrapper">
+    <h2 class="text-primary mb-4">Add New Book</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label for="id_title">Title:</label>
+          <input type="text" name="title" value="{{ form.title.value }}" class="form-control" placeholder="Title:" required>
+        </div>
+    
+        <div class="form-group">
+          <label for="id_author">Author:</label>
+          <input type="text" name="author" value="{{ form.author.value }}" class="form-control" placeholder="Author:" required>
+        </div>
+    
+        <div class="form-group">
+          <label for="id_category">Category:</label>
+          <select name="category" class="form-control" required>
+            <option value="" disabled selected>Category:</option>
+            {% for category in form.category.field.queryset %}
+              <option value="{{ category.id }}" {% if category.id == form.category.value %}selected{% endif %}>{{ category.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+    
+        <button type="submit" class="btn btn-primary">Add Book</button>
+        <a href="{% url 'books' %}" class="btn btn-secondary">Cancel</a>
+      </form>
+        
+</div>
+</div>
+{% endblock %}
+
+ {% load static %}
+    <!-- plugins:js -->
+    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <script src="{% static 'assets/vendors/select2/select2.min.js' %}"></script>
+    <script src="{% static 'assets/vendors/typeahead.js/typeahead.bundle.min.js' %}"></script>
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="{% static 'assets/js/off-canvas.js' %}"></script>
+    <script src="{% static 'assets/js/misc.js' %}"></script>
+    <script src="{% static 'assets/js/settings.js' %}"></script>
+    <script src="{% static 'assets/js/todolist.j' %}s"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page -->
+    <script src="{% static 'assets/js/file-upload.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead.js' %}"></script>
+    <script src="{% static 'assets/js/select2.js' %}"></script>
+    <!-- End custom js for this page -->
+  </body>
+</html>

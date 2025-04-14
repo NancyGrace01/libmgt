@@ -14,10 +14,18 @@ $(document).ready(function () {
             },
             success: function (response) {
                 $("#login-message").html("<p class='text-success'>" + response.message + "</p>");
-                window.location.href = "/dashboard/";
+                
+                if (response.redirect_url) {
+                    setTimeout(function () {
+                        window.location.href = response.redirect_url;
+                    }, 1000);
+                } else {
+                    $("#login-message").html("<p class='text-danger'>Missing redirect URL.</p>");
+                }
             },
+            
             error: function (xhr) {
-                var errorMsg = JSON.parse(xhr.responseText).error;
+                var errorMsg = xhr.responseJSON?.error || "An error occurred.";
                 $("#login-message").html("<p class='text-danger'>" + errorMsg + "</p>");
             },
         });

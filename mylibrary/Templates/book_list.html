@@ -3,7 +3,6 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
 <div class="container mt-4">
@@ -29,7 +28,7 @@
             {% for book in available_books %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     {{ book.title }} by {{ book.author }} | <strong>Category:</strong> {{ book.category }}
-                    <a href="{% url 'borrow_book' book.id %}" class="btn btn-success btn-sm">Borrow</a>
+                    <button class="btn btn-success btn-sm borrow-book" data-book-id="{{ book.id }}">Borrow</button>
                 </li>
             {% endfor %}
         </ul>
@@ -43,7 +42,7 @@
             {% for borrowed in user_borrowed_books %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     {{ borrowed.book.title }} - Borrowed on {{ borrowed.borrow_date }} | Due: {{ borrowed.due_date }}
-                    <a href="{% url 'return_book' borrowed.book.id %}" class="btn btn-warning btn-sm">Return</a>
+                    <button class="btn btn-warning btn-sm return-book" data-book-id="{{ borrowed.book.id }}">Return</button>
                 </li>
             {% endfor %}
         </ul>
@@ -61,4 +60,81 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function showFlashMessage(message, type = "success") {
+        const flashDiv = document.createElement("div");
+        flashDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+        flashDiv.role = "alert";
+        flashDiv.style.zIndex = "9999";
+        flashDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        document.body.appendChild(flashDiv);
+
+        setTimeout(() => {
+            flashDiv.classList.remove("show");
+            flashDiv.classList.add("fade");
+            setTimeout(() => flashDiv.remove(), 300);
+        }, 5000);
+    }
+
+    $(document).ready(function () {
+        $(".borrow-book").on("click", function () {
+            var bookId = $(this).data("book-id");
+            if (confirm("Are you sure you want to borrow this book?")) {
+                $.ajax({
+                    url: "{% url 'borrow_book' 0 %}".replace("0", bookId),
+                    type: "POST",
+                    data: {
+                        "csrfmiddlewaretoken": "{{ csrf_token }}",
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            showFlashMessage("Book borrowed successfully!");
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1500);
+                        } else {
+                            showFlashMessage(response.error, "danger");
+                        }
+                    },
+                    error: function () {
+                        showFlashMessage("An error occurred. Please try again.", "danger");
+                    }
+                });
+            }
+        });
+
+        $(".return-book").on("click", function () {
+            var bookId = $(this).data("book-id");
+            if (confirm("Are you sure you want to return this book?")) {
+                $.ajax({
+                    url: "{% url 'return_book' 0 %}".replace("0", bookId),
+                    type: "POST",
+                    data: {
+                        "csrfmiddlewaretoken": "{{ csrf_token }}",
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            showFlashMessage("Book returned successfully!");
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1500);
+                        } else {
+                            showFlashMessage(response.error, "danger");
+                        }
+                    },
+                    error: function () {
+                        showFlashMessage("An error occurred. Please try again.", "danger");
+                    }
+                });
+            }
+        });
+    });
+</script>
 {% endblock %}

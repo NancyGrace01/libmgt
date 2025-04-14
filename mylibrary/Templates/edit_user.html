@@ -1,0 +1,39 @@
+{% extends "admin_dashboard.html" %}
+{% block title %}Edit User{% endblock %}
+
+{% block content %}
+<div class="main-panel">
+<div class="content-wrapper">
+  <i class="fas fa-users"></i>
+  <h2>Edit User: {{ profile.full_name }}</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a href="{% url 'users_list' %}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+</div>
+{% endblock %}
+
+ {% load static %}
+    <!-- plugins:js -->
+    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <script src="{% static 'assets/vendors/select2/select2.min.js' %}"></script>
+    <script src="{% static 'assets/vendors/typeahead.js/typeahead.bundle.min.js' %}"></script>
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="{% static 'assets/js/off-canvas.js' %}"></script>
+    <script src="{% static 'assets/js/misc.js' %}"></script>
+    <script src="{% static 'assets/js/settings.js' %}"></script>
+    <script src="{% static 'assets/js/todolist.j' %}s"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page -->
+    <script src="{% static 'assets/js/file-upload.js' %}"></script>
+    <script src="{% static 'assets/js/typeahead.js' %}"></script>
+    <script src="{% static 'assets/js/select2.js' %}"></script>
+    <!-- End custom js for this page -->
+  </body>
+</html>

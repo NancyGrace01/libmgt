@@ -1,0 +1,86 @@
+{% extends "admin_dashboard.html" %}
+      
+        {% block content %}
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="page-header">
+              <h3 class="page-title"> Borrowed Books </h3>
+            </div>
+            <div class="row">
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Overview</h4>
+                    <div class="table-responsive">
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th>Full Name</th>
+                            <th>Book Title</th>
+                            <th>Date Borrowed</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for record in borrowed_books %}
+                            <tr>
+                              <td>{{ record.borrower }}</td>
+                              <td>{{ record.book.title }}</td>
+                              <td>{{ record.borrow_date|date:"M d, Y" }}</td>
+                              <td>{{ record.due_date|date:"M d, Y" }}</td>
+                              <td>
+                                {% if record.returned %}
+                                  <label class="badge badge-success">Returned</label>
+                                {% else %}
+                                  <label class="badge badge-danger">Not Returned</label>
+                                {% endif %}
+                              </td>
+                            </tr>
+                          {% empty %}
+                            <tr>
+                              <td colspan="5">No records found.</td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- content-wrapper ends -->
+          <!-- partial:../../partials/_footer.html -->
+          <footer class="footer">
+            <div class="d-sm-flex justify-content-center justify-content-sm-between">
+              <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024 <a href="https://www.bootstrapdash.com/" target="_blank">BootstrapDash</a>. All rights reserved.</span>
+              <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center"> <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="mdi mdi-heart text-danger"></i></span> <i class="mdi mdi-heart text-danger"></i></span>
+            </div>
+          </footer>
+          <!-- partial -->
+        </div>
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+
+    {% endblock %}
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+     {% load static %}
+    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="{% static 'assets/js/off-canvas.js' %}"></script>
+    <script src="{% static 'assets/js/misc.js' %}"></script>
+    <script src="{% static 'assets/js/settings.js' %}"></script>
+    <script src="{% static 'assets/js/todolist.js' %}"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page -->
+    <!-- End custom js for this page -->
+  </body>
+</html>

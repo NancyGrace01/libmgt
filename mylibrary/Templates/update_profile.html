@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Update Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-header text-center bg-primary text-white">
+                    <h4>Update Profile</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" name="full_name" class="form-control" value="{{ profile.full_name }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">State</label>
+                            <input type="text" name="state" class="form-control" value="{{ profile.state }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">City</label>
+                            <input type="text" name="city" class="form-control" value="{{ profile.city }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Gender</label>
+                            <input type="text" name="gender" class="form-control" value="{{ profile.gender }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Occupation</label>
+                            <input type="text" name="occupation" class="form-control" value="{{ profile.occupation }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Profile Picture (Max: 50KB)</label>
+                            <input type="file" name="profile_picture" class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+                    </form>
+                    <a href="{% url 'profile' %}" class="btn btn-secondary w-100 mt-2">Back to Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
