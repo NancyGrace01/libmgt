@@ -7,7 +7,7 @@ from .models import Book, BorrowedBook, Profile, Category, CustomUser, AdminProf
 from django.contrib.auth.models import User
 from datetime import timedelta, date
 from django.http import JsonResponse, HttpResponseForbidden
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.utils import timezone
 from django.contrib.auth import login, logout
 from datetime import timedelta
@@ -19,7 +19,7 @@ from functools import wraps
 def home(request):
     return render(request, 'book_list.html')  
 
-
+#ADMIN
 def role_required(allowed_roles):
     def decorator(view_func):
         @wraps(view_func)
@@ -48,9 +48,11 @@ def admin_dashboard(request):
     try:
         profile = AdminProfile.objects.get(user=request.user)
         admin_name = profile.user.username
+        role = profile.user.role
         profile_pic = profile.user.profile_picture.url if hasattr(profile.user, 'profile_picture') and profile.user.profile_picture else '/static/images/default.jpg'
     except AdminProfile.DoesNotExist:
         admin_name = request.user.username
+        role = 'Admin'
         profile_pic = '/static/images/default.jpg'
 
     context = {
@@ -59,6 +61,7 @@ def admin_dashboard(request):
         'borrowed_books': borrowed_books,
         'admin_name': admin_name,
         'profile_pic': profile_pic,
+        'role': role,
     }
     
     return render(request, 'admin_dashboard.html', context)
@@ -242,6 +245,7 @@ def delete_user(request, profile_id):
     return redirect('users_list')
 
 
+#USERS VIEWS
 
 def signup(request):
     if request.method == "POST":
@@ -270,7 +274,7 @@ def signup(request):
         user = CustomUser.objects.create_user(username=username, email=email, password=password, role='user')
 
         verification_code = str(random.randint(100000, 999999))
-        
+
         Profile.objects.create(
             user=user,
             full_name=full_name,
@@ -281,21 +285,31 @@ def signup(request):
             verification_code=verification_code,
             code_sent_at=timezone.now()
         )
-        
-        send_mail(
-            subject="Verify Your Email",
-            message=f"Hello {full_name},\n\nYour verification code is: {verification_code}\nIt expires in 10 minutes.",
-            from_email="noreply@ozonelibrary.com",
-            recipient_list=[email],
-            fail_silently=False,
+
+        email_subject = "Verify Your Email - Ozone Library"
+        email_body = f"""
+        Hello {full_name},<br><br>
+        Your <strong>verification code</strong> is: <strong>{verification_code}</strong><br>
+        It will expire in <strong>10 minutes</strong>.<br><br>
+        Thank you for joining <b>Ozone Library</b>!
+        """
+
+        email_message = EmailMessage(
+            subject=email_subject,
+            body=email_body,
+            from_email="nancygrace92@gmail.com",
+            to=[email],
         )
-        
+        email_message.content_subtype = "html" 
+        email_message.send()
+
         request.session['pending_verification_user_id'] = user.id
 
         messages.success(request, "Signup successful! A verification code has been sent to your email.")
         return redirect('verify_email')
 
     return render(request, "signup.html")
+
 
 
 def verify_email(request):

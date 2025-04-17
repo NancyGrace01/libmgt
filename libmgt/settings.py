@@ -63,6 +63,17 @@ ROOT_URLCONF = 'libmgt.urls'
 # ]
 
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = 'nancygrace92@gmail.com'
+EMAIL_HOST_PASSWORD = 'vajvjnoumirppyhf'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -147,25 +158,5 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
-
-# LOGGING = {
-#     'version': 1,
-#     'handlers': {
-#         'file': {
-#             'level': 'ERROR',
-#             'class': 'logging.FileHandler',
-#             'filename': 'Desktop/libmgt/django_errors.log',
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['file'],
-#             'level': 'ERROR',
-#             'propagate': True,
-#         },
-#     },
-# }
-
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
